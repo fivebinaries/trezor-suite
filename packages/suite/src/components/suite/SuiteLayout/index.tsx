@@ -157,7 +157,7 @@ const SuiteLayout = (props: SuiteLayoutProps) => {
 
     return (
         <PageWrapper>
-            <Metadata title={title} />
+            {/* <Metadata title={title} /> */}
             <SuiteBanners />
             <DiscoveryProgress />
             <NavigationBar />

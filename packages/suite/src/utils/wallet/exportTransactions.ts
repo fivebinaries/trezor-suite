@@ -1,11 +1,11 @@
 import { AccountTransaction } from 'trezor-connect';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+// import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { Network } from '@wallet-types';
 import { trezorLogo } from '@suite-constants/b64images';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 type Data = {
     coin: Network['symbol'];

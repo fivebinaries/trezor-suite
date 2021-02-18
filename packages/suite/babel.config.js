@@ -4,7 +4,7 @@ module.exports = api => {
 
     return {
         // transformIgnorePatterns: ['<rootDir>/node_modules/'],
-        presets: ['next/babel'],
+        // presets: ['next/babel'],
         plugins: [],
     };
 };
