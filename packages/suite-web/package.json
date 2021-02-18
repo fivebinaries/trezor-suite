@@ -7,10 +7,10 @@
         "type-check:watch": "yarn type-check -- --watch",
         "lint": "eslint . --ext .tsx,.ts",
         "copy-files": "yarn workspace @trezor/suite-data copy-static-files",
-        "dev": "yarn workspace @trezor/suite-data copy-static-files && snowpack dev",
+        "dev": "yarn workspace @trezor/suite-data copy-static-files & webpack serve",
         "cert": "sh ./scripts/gencert.sh",
         "dev:https": "yarn workspace @trezor/suite-data copy-static-files && node ./scripts/httpsServer.js",
-        "build:app": "next build && next export -o build",
+        "build:app": "NODE_ENV=production webpack",
         "build": "run-s copy-files build:app"
     },
     "dependencies": {
