@@ -8,10 +8,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-const { NODE_ENV } = process.env;
+const { NODE_ENV, ANALYZE } = process.env;
 
 const environment = NODE_ENV || 'development';
 const isDev = environment === 'development';
+const isAnalyzing = ANALYZE === 'true';
 const pkgFile = require('./package.json');
 
 const gitRevision = execSync('git rev-parse HEAD').toString().trim();
@@ -78,7 +79,6 @@ module.exports = {
         },
     },
     optimization: {
-        /*
         splitChunks: {
             cacheGroups: {
                 vendors: {
@@ -93,7 +93,6 @@ module.exports = {
                 },
             },
         },
-        */
     },
     module: {
         rules: [
@@ -104,6 +103,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
+                        cacheDirectory: true,
                         presets: ['@babel/preset-react', '@babel/preset-typescript'],
                         plugins: [
                             '@babel/plugin-proposal-class-properties',
@@ -114,7 +114,7 @@ module.exports = {
                                     preprocess: true,
                                 },
                             ],
-                            ...(isDev ? ['react-refresh/babel'] : []),
+                            // ...(isDev ? ['react-refresh/babel'] : []),
                         ],
                     },
                 },
@@ -189,7 +189,9 @@ module.exports = {
         // Webpack Dev server only
         ...(isDev ? [
             new webpack.HotModuleReplacementPlugin(),
-            new ReactRefreshWebpackPlugin(),
+            // new ReactRefreshWebpackPlugin(),
+        ] : []),
+        ...(isAnalyzing ? [
             new BundleAnalyzerPlugin({
                 openAnalyzer: false,
             }),

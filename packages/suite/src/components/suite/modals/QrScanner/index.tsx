@@ -7,7 +7,6 @@ import QrReader from 'react-qr-reader';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-
 const Description = styled.div`
     display: flex;
     flex-direction: column;

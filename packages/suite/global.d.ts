@@ -48,5 +48,6 @@ declare global {
         desktopApi?: DesktopApi; // Electron API
         Cypress?: any;
         TrezorConnect?: any;
+        store?: any; // Cypress
     }
 }

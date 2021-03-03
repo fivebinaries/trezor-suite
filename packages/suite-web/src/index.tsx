@@ -66,7 +66,7 @@ const Main = () => {
                                             top: '-1000px',
                                         }}
                                     />
-                                    {/* <Metadata /> */}
+                                    <Metadata />
                                     <ToastContainer />
                                     <Preloader>
                                         <AppRouter />
