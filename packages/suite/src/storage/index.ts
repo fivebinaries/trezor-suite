@@ -72,6 +72,8 @@ const onUpgrade: OnUpgradeFunc<SuiteDBSchema> = async (db, oldVersion, newVersio
 
         // metadata
         db.createObjectStore('metadata');
+
+        db.createObjectStore('messageSystem');
     } else {
         // migrate functions
         await migrate(db, oldVersion, newVersion, transaction);

@@ -8,6 +8,7 @@ import { AcquiredDevice } from '@suite-types';
 import { MetadataState } from '@suite-types/metadata';
 import { Account, Discovery, CoinFiatRates, WalletAccountTransaction } from '@wallet-types';
 import { GraphData } from '@wallet-types/graph';
+import { MessageSystem } from '@suite/types/suite/messageSystem';
 import { BuyTrade, ExchangeTrade } from 'invity-api';
 
 export interface DBWalletAccountTransaction {
@@ -91,6 +92,13 @@ export interface SuiteDBSchema extends DBSchema {
     metadata: {
         key: 'state';
         value: MetadataState;
+    };
+    messageSystem: {
+        key: string;
+        value: {
+            currentSequence: number;
+            config: MessageSystem;
+        };
     };
 }
 
