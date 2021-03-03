@@ -12,8 +12,8 @@
         "build": "yarn build:browser-detection",
         "build:browser-detection": "webpack --config ./browser-detection.webpack.js",
         "copy-static-files": "yarn build && ts-node ./index.ts",
-        "test-same-svgs": "ts-node ./test/test-same-svgs.ts"
-    },
+        "test-same-svgs": "ts-node ./test/test-same-svgs.ts",
+        "message-system-types": "./node_modules/.bin/json2ts -i message-system/schema.json -o ../suite/src/types/suite/messageSystem.d.ts --style.singleQuote --style.tabWidth=4 --bannerComment='/**\n* DO NOT MODIFY BY HAND! This file was automatically generated.\n* Instead, please modify the original JSONSchema file in suite-data package, and run `npm run message-system-types` command.\n*/'"    },
     "dependencies": {
         "ua-parser-js": "^0.7.24"
     },
@@ -23,6 +23,7 @@
         "copy-webpack-plugin": "^6.0.2",
         "fs-extra": "^9.0.1",
         "html-webpack-plugin": "^4.5.0",
+        "json-schema-to-typescript": "^10.1.3",
         "remove-files-webpack-plugin": "^1.4.3",
         "sharedworker-loader": "^2.1.1",
         "ts-node": "^8.10.2",

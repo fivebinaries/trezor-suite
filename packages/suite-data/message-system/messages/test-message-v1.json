@@ -1,0 +1,68 @@
+{
+    "version":1,
+    "timestamp":"2021-03-03T03:48:16+00:00",
+    "sequence":33,
+    "actions":[
+       {
+          "if":[
+             {
+                "enabled":[
+                   "tor"
+                ],
+                "os":{
+                   "macos":[
+                      "10.14",
+                      "10.18"
+                   ],
+                   "linux":"< 20.04",
+                   "windows":null
+                },
+                "environment":{
+                   "desktop":"< 21.01",
+                   "mobile":null,
+                   "web":"< 21.01"
+                },
+                "browser":{
+                   "firefox":[
+                      "82",
+                      "83"
+                   ],
+                   "chrome":null
+                },
+                "transport":{
+                   "trezord":[
+                      "2.0.30",
+                      "2.0.28"
+                   ]
+                },
+                "device":[
+                   {
+                      "model":"t",
+                      "firmware":"=2.3.4",
+                      "vendor":"SatoshiLabs"
+                   }
+                ]
+             }
+          ],
+          "then":{
+             "active":true,
+             "notification":{
+                "severity":"low",
+                "dismissible":true,
+                "location":[
+                   "coins.*.receive",
+                   "coins.test.rbf",
+                   "settings.tor"
+                ],
+                "message":{
+                   "en-GB":"This feature will soon be disabled",
+                   "fr-FR":"Cette fonctionnalité sera bientôt désactivée",
+                   "de-DE":"Dieses Funktionalität funktioniert nicht mehr.",
+                   "it-IT":"mama mia"
+                }
+             }
+          }
+       }
+    ]
+ }
+ 
