@@ -103,7 +103,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        cacheDirectory: true,
+                        // cacheDirectory: true,
                         presets: ['@babel/preset-react', '@babel/preset-typescript'],
                         plugins: [
                             '@babel/plugin-proposal-class-properties',
@@ -114,7 +114,7 @@ module.exports = {
                                     preprocess: true,
                                 },
                             ],
-                            // ...(isDev ? ['react-refresh/babel'] : []),
+                            ...(isDev ? ['react-refresh/babel'] : []),
                         ],
                     },
                 },
@@ -189,7 +189,7 @@ module.exports = {
         // Webpack Dev server only
         ...(isDev ? [
             new webpack.HotModuleReplacementPlugin(),
-            // new ReactRefreshWebpackPlugin(),
+            new ReactRefreshWebpackPlugin(),
         ] : []),
         ...(isAnalyzing ? [
             new BundleAnalyzerPlugin({

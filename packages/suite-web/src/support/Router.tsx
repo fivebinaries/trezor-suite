@@ -2,16 +2,16 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Dashboard from '@dashboard-views';
-import Notifications from '@suite-views/notifications/Container';
+import Notifications from '@suite-views/notifications';
 import Passwords from '@passwords-views';
 import Portfolio from '@portfolio-views';
 import ErrorPage from '@suite-views/error';
 
-import Transactions from '@wallet-views/transactions/Container';
-import Receive from '@wallet-views/receive/Container';
-import Details from '@wallet-views/details/Container';
+import Transactions from '@wallet-views/transactions';
+import Receive from '@wallet-views/receive';
+import Details from '@wallet-views/details';
 import Send from '@wallet-views/send';
-import SignVerify from '@wallet-views/sign-verify/Container';
+import SignVerify from '@wallet-views/sign-verify';
 
 import CoinMarketBuy from '@wallet-views/coinmarket/buy';
 import CoinMarketBuyDetail from '@wallet-views/coinmarket/buy/detail';
@@ -22,10 +22,10 @@ import CoinMarketExchangeOffers from '@wallet-views/coinmarket/exchange/offers';
 import CoinMarketSpend from '@wallet-views/coinmarket/spend';
 import CoinmarketRedirect from '@wallet-views/coinmarket/redirect';
 
-import Settings from '@settings-views/Container';
-import SettingsCoins from '@settings-views/coins/Container';
-import SettingsDebug from '@settings-views/debug/Container';
-import SettingsDevice from '@settings-views/device/Container';
+import Settings from '@settings-views';
+import SettingsCoins from '@settings-views/coins';
+import SettingsDebug from '@settings-views/debug';
+import SettingsDevice from '@settings-views/device';
 
 const AppRouter = () => (
     <Switch>

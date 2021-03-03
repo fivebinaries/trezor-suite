@@ -2,6 +2,11 @@ import React, { useEffect } from 'react';
 import { render } from 'react-dom';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Router } from 'react-router-dom';
+import TrezorConnect from 'trezor-connect';
+
+import { store } from '@suite/reducers/store';
+import { isDev } from '@suite-utils/build';
+import { SENTRY_CONFIG } from '@suite-config';
 
 import * as Sentry from '@sentry/browser';
 import Metadata from '@suite-components/Metadata';
@@ -15,11 +20,6 @@ import ErrorBoundary from '@suite-support/ErrorBoundary';
 import RouterHandler from '@suite-support/Router';
 import ThemeProvider from '@suite-support/ThemeProvider';
 import history from '@suite/support/history';
-
-import { store } from '@suite/reducers/store';
-import { isDev } from '@suite-utils/build';
-import TrezorConnect from 'trezor-connect';
-import { SENTRY_CONFIG } from '@suite-config';
 
 import AppRouter from './support/Router';
 import ImagesPreloader from './support/ImagesPreloader';
