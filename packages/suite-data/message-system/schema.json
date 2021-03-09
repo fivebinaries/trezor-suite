@@ -12,14 +12,12 @@
    ],
    "properties":{
       "version":{
-         "title":"Version",
          "description":"Version of the messaging system. In case we would change the format of the config itself.",
          "type":"integer",
          "minimum":1,
          "default":1
       },
       "timestamp":{
-         "title":"Timestamp",
          "description":"Publish date of the config in ISO 8601 date-time format.",
          "type": "string",
          "examples":[
@@ -28,18 +26,17 @@
          ]
       },
       "sequence":{
-         "title":"Sequence",
          "description":"An increasing counter. Suite MUST decline any file with lower than latest number. This is to protect against replay attacks, where attacker could send an older version of the file and Suite would accept it",
          "type":"integer",
          "minimum":1,
          "default":1
       },
       "actions":{
-         "description":"An array of messages with specific conditions",
+         "description":"An array of messages which are displayed on specific conditions",
          "type":"array",
-         "title":"Actions",
          "uniqueItems":true,
          "items":{
+            "title": "Action",
             "type":"object",
             "required":[
                "if",
@@ -63,40 +60,49 @@
                      ],
                      "properties":{
                         "enabled":{
-                           "title":"Enabled",
+                           "title": "EnabledServices",
                            "description":"Services active",
                            "type":"array",
+                           "uniqueItems": true,
                            "items":{
-                              "type":"string"
+                              "type":"string",
+                              "enum": ["tor"]
                            },
                            "examples":[
                               "tor"
                            ]
                         },
                         "os":{
-                           "title":"Os",
+                           "title":"Operating System",
                            "description":"Eligible versions of operating systems",
                            "type":"object",
                            "required":[
                               "macos",
                               "linux",
-                              "windows"
+                              "windows",
+                              "android",
+                              "ios"
                            ],
                            "properties":{
                               "macos":{
-                                 "title":"macOS",
                                  "$ref":"#/definitions/version"
                               },
                               "linux":{
-                                 "title":"Linux",
                                  "$ref":"#/definitions/version"
                               },
                               "windows":{
-                                 "title":"Windows",
+                                 "$ref":"#/definitions/version"
+                              },
+                              "android":{
+                                 "$ref":"#/definitions/version"
+                              },
+                              "ios":{
                                  "$ref":"#/definitions/version"
                               }
                            },
-                           "additionalProperties":false
+                           "additionalProperties": {
+                              "$ref":"#/definitions/version"
+                           }
                         },
                         "environment":{
                            "title":"Environment",
@@ -109,15 +115,12 @@
                            ],
                            "properties":{
                               "desktop":{
-                                 "title":"Desktop",
                                  "$ref":"#/definitions/version"
                               },
                               "mobile":{
-                                 "title":"Mobile",
                                  "$ref":"#/definitions/version"
                               },
                               "web":{
-                                 "title":"Web",
                                  "$ref":"#/definitions/version"
                               }
                            },
@@ -129,40 +132,44 @@
                            "type":"object",
                            "required":[
                               "firefox",
-                              "chrome"
+                              "chrome",
+                              "chromium"
                            ],
                            "properties":{
                               "firefox":{
-                                 "title":"Firefox",
                                  "$ref":"#/definitions/version"
                               },
                               "chrome":{
-                                 "title":"Google Chrome",
+                                 "$ref":"#/definitions/version"
+                              },
+                              "chromium": {
                                  "$ref":"#/definitions/version"
                               }
                            },
-                           "additionalProperties":false
+                           "additionalProperties": {
+                              "$ref":"#/definitions/version"
+                           }
                         },
                         "transport":{
                            "title":"Transport",
                            "description":"Eligible versions of transport layer apps",
                            "type":"object",
                            "required":[
-                              "trezord"
+                              "bridge"
                            ],
                            "properties":{
-                              "trezord":{
+                              "bridge":{
                                  "$ref":"#/definitions/version"
                               }
                            },
                            "additionalProperties":false
                         },
                         "device":{
-                           "title":"Device",
                            "description":"Eligible device models",
                            "type":"array",
                            "uniqueItems":true,
                            "items":{
+                              "title":"Device",
                               "type":"object",
                               "required":[
                                  "model",
@@ -179,7 +186,6 @@
                                     ]
                                  },
                                  "firmware":{
-                                    "title":"Firmware version",
                                     "$ref":"#/definitions/version"
                                  },
                                  "vendor":{
@@ -208,7 +214,6 @@
                   ],
                   "properties":{
                      "active":{
-                        "title":"Active",
                         "description":"A message is active and can be shown to users satisfying rules",
                         "type":"boolean"
                      },
@@ -223,12 +228,10 @@
                         ],
                         "properties":{
                            "dismissible":{
-                              "title":"Dismissible",
                               "description":"A user can close the message and never see it again",
                               "type":"boolean"
                            },
                            "location":{
-                              "title":"Location",
                               "description":"The location to which the message applies. Wildcards allowed.",
                               "oneOf":[
                                  {
@@ -251,11 +254,11 @@
                               ],
                               "properties":{
                                  "en-GB":{
-                                    "$ref":"#/definitions/messageLocal"
+                                    "type": "string"
                                  }
                               },
                               "additionalProperties":{
-                                 "$ref":"#/definitions/messageLocal"
+                                 "type": "string"
                               }
                            },
                            "severity":{
@@ -281,12 +284,16 @@
    "definitions":{
       "version":{
          "examples":[
-            "< 20.01",
+            "<=20.01",
+            ">30",
+            "~20.1",
+            "^20.1",
             "82",
+            "*",
             null,
             [
-               "70",
-               "71"
+               "<70",
+               ">71"
             ]
          ],
          "oneOf":[
@@ -306,7 +313,6 @@
          ]
       },
       "messageLocal":{
-         "title":"Localization",
          "type":"string"
       }
    }

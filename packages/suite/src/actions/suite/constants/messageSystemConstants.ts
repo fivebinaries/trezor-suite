@@ -8,6 +8,6 @@ export const FETCH_INTERVAL = 21600000;
 // every 10 minutes the message system fetching interval should be checked
 export const FETCH_CHECK_INTERVAL = 600000;
 
-// TODO: change url
+// TODO: change to production URL
 export const MESSAGE_SYSTEM_JWS_CONFIG_URL =
     'https://satoshilabs-assignment.s3.eu-central-1.amazonaws.com/signature.jws';

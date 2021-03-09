@@ -1,7 +1,7 @@
 import produce from 'immer';
+import { getUnixTime } from 'date-fns';
 import { Action } from '@suite-types';
 import { MESSAGE_SYSTEM, STORAGE } from '@suite/actions/suite/constants';
-import { getUnixTime } from 'date-fns';
 import { MessageSystem } from '@suite/types/suite/messageSystem';
 
 export type State = {

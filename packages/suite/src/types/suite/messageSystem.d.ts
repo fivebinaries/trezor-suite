@@ -4,125 +4,114 @@
  */
 
 /**
- * Version of the messaging system. In case we would change the format of the config itself.
- */
-export type Version = number;
-/**
- * Publish date of the config in ISO 8601 date-time format.
- */
-export type Timestamp = string;
-/**
- * An increasing counter. Suite MUST decline any file with lower than latest number. This is to protect against replay attacks, where attacker could send an older version of the file and Suite would accept it
- */
-export type Sequence = number;
-/**
  * Services active
  */
-export type Enabled = string[];
-export type MacOS = string | string[] | null;
-export type Linux = string | string[] | null;
-export type Windows = string | string[] | null;
-export type Desktop = string | string[] | null;
-export type Mobile = string | string[] | null;
-export type Web = string | string[] | null;
-export type Firefox = string | string[] | null;
-export type GoogleChrome = string | string[] | null;
-export type Version1 = string | string[] | null;
+export type EnabledServices = 'tor'[];
+export type Version = string | string[] | null;
 export type Model = 't' | '1';
-export type FirmwareVersion = string | string[] | null;
 /**
  * Eligible authorized vendors
  */
 export type Vendor = 'SatoshiLabs';
 /**
- * Eligible device models
- */
-export type Device = {
-    model: Model;
-    firmware: FirmwareVersion;
-    vendor: Vendor;
-}[];
-/**
  * An array of required conditions to show the message.
  */
 export type If = {
-    enabled: Enabled;
-    os: Os;
+    enabled: EnabledServices;
+    os: OperatingSystem;
     environment: Environment;
     browser: Browser;
     transport: Transport;
-    device: Device;
+    /**
+     * Eligible device models
+     */
+    device: Device[];
 }[];
-/**
- * A message is active and can be shown to users satisfying rules
- */
-export type Active = boolean;
-/**
- * A user can close the message and never see it again
- */
-export type Dismissible = boolean;
-/**
- * The location to which the message applies. Wildcards allowed.
- */
-export type Location = string | string[];
-export type Localization = string;
 export type Severity = 'low' | 'medium' | 'high';
-/**
- * An array of messages with specific conditions
- */
-export type Actions = {
-    if: If;
-    then: Then;
-}[];
 
 /**
  * JSON schema of the Trezor Suite messaging system
  */
 export interface MessageSystem {
-    version: Version;
-    timestamp: Timestamp;
-    sequence: Sequence;
-    actions: Actions;
+    /**
+     * Version of the messaging system. In case we would change the format of the config itself.
+     */
+    version: number;
+    /**
+     * Publish date of the config in ISO 8601 date-time format.
+     */
+    timestamp: string;
+    /**
+     * An increasing counter. Suite MUST decline any file with lower than latest number. This is to protect against replay attacks, where attacker could send an older version of the file and Suite would accept it
+     */
+    sequence: number;
+    /**
+     * An array of messages which are displayed on specific conditions
+     */
+    actions: Action[];
+}
+export interface Action {
+    if: If;
+    then: Then;
 }
 /**
  * Eligible versions of operating systems
  */
-export interface Os {
-    macos: MacOS;
-    linux: Linux;
-    windows: Windows;
+export interface OperatingSystem {
+    macos: Version;
+    linux: Version;
+    windows: Version;
+    android: Version;
+    ios: Version;
+    [k: string]: Version;
 }
 /**
  * Eligible versions of app releases
  */
 export interface Environment {
-    desktop: Desktop;
-    mobile: Mobile;
-    web: Web;
+    desktop: Version;
+    mobile: Version;
+    web: Version;
 }
 /**
  * Eligible versions of browsers
  */
 export interface Browser {
-    firefox: Firefox;
-    chrome: GoogleChrome;
+    firefox: Version;
+    chrome: Version;
+    chromium: Version;
+    [k: string]: Version;
 }
 /**
  * Eligible versions of transport layer apps
  */
 export interface Transport {
-    trezord: Version1;
+    bridge: Version;
+}
+export interface Device {
+    model: Model;
+    firmware: Version;
+    vendor: Vendor;
 }
 /**
  * A specific message configuration
  */
 export interface Then {
-    active: Active;
+    /**
+     * A message is active and can be shown to users satisfying rules
+     */
+    active: boolean;
     notification: Notification;
 }
 export interface Notification {
-    dismissible: Dismissible;
-    location: Location;
+    /**
+     * A user can close the message and never see it again
+     */
+    dismissible: boolean;
+    /**
+     * The location to which the message applies. Wildcards allowed.
+     */
+    location: string | string[];
     message: Message;
     severity: Severity;
     [k: string]: unknown;
@@ -131,6 +120,6 @@ export interface Notification {
  * A multilingual message localization
  */
 export interface Message {
-    'en-GB': Localization;
-    [k: string]: Localization;
+    'en-GB': string;
+    [k: string]: string;
 }
