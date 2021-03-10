@@ -60,9 +60,8 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 // Modals requested byt Device from `trezor-connect`
 const getDeviceContextModal = (props: Props) => {
-    const { modal, device, router } = props;
+    const { modal, device } = props;
     if (modal.context !== MODAL.CONTEXT_DEVICE || !device) return null;
-    const isCoinmarketOffers = router.route?.name.startsWith('wallet-coinmarket');
 
     switch (modal.windowType) {
         // T1 firmware
@@ -90,10 +89,6 @@ const getDeviceContextModal = (props: Props) => {
             return <PassphraseOnDevice device={device} />;
         case 'ButtonRequest_ConfirmOutput':
         case 'ButtonRequest_SignTx': {
-            if (isCoinmarketOffers) {
-                return <CoinmarketReviewTransaction type="sign-transaction" />;
-            }
-
             return <ReviewTransaction type="sign-transaction" />;
         }
         case 'ButtonRequest_FirmwareCheck':
