@@ -3,38 +3,33 @@
  * Instead, please modify the original JSONSchema file in suite-data package, and run `npm run message-system-types` command.
  */
 
-/**
- * Services active
- */
-export type EnabledServices = 'tor'[];
 export type Version = string | string[] | null;
 export type Model = 't' | '1';
 /**
- * Eligible authorized vendors
+ * Eligible authorized vendors.
  */
 export type Vendor = 'SatoshiLabs';
-/**
- * An array of required conditions to show the message.
- */
-export type If = {
-    enabled: EnabledServices;
+export type Condition = {
+    settings: Settings[];
     os: OperatingSystem;
     environment: Environment;
     browser: Browser;
     transport: Transport;
-    /**
-     * Eligible device models
-     */
-    device: Device[];
+    devices: Device[];
 }[];
-export type Severity = 'low' | 'medium' | 'high';
+export type Variant = 'info' | 'warning' | 'critical';
+export type Category = 'banner' | 'context' | 'modal';
+/**
+ * The domain to which the message applies. Wildcards are allowed. Only used for 'context' category.
+ */
+export type Domain = string | string[];
 
 /**
- * JSON schema of the Trezor Suite messaging system
+ * JSON schema of the Trezor Suite messaging system.
  */
 export interface MessageSystem {
     /**
-     * Version of the messaging system. In case we would change the format of the config itself.
+     * A version of the messaging system. In case we would change the format of the config itself.
      */
     version: number;
     /**
@@ -42,21 +37,22 @@ export interface MessageSystem {
      */
     timestamp: string;
     /**
-     * An increasing counter. Suite MUST decline any file with lower than latest number. This is to protect against replay attacks, where attacker could send an older version of the file and Suite would accept it
+     * An increasing counter. Trezor Suite must decline any sequence lower than the latest number. This is to protect against replay attacks, where an attacker could send an older version of the file, and Trezor Suite would accept it.
      */
     sequence: number;
-    /**
-     * An array of messages which are displayed on specific conditions
-     */
     actions: Action[];
 }
 export interface Action {
-    if: If;
-    then: Then;
+    conditions: Condition;
+    notification: Notification;
 }
 /**
- * Eligible versions of operating systems
+ * If a setting is not specified, then it can be either true or false. Currently, 'tor' and coin symbols are supported.
  */
+export interface Settings {
+    tor?: boolean;
+    [k: string]: boolean;
+}
 export interface OperatingSystem {
     macos: Version;
     linux: Version;
@@ -65,26 +61,17 @@ export interface OperatingSystem {
     ios: Version;
     [k: string]: Version;
 }
-/**
- * Eligible versions of app releases
- */
 export interface Environment {
     desktop: Version;
     mobile: Version;
     web: Version;
 }
-/**
- * Eligible versions of browsers
- */
 export interface Browser {
     firefox: Version;
     chrome: Version;
     chromium: Version;
     [k: string]: Version;
 }
-/**
- * Eligible versions of transport layer apps
- */
 export interface Transport {
     bridge: Version;
 }
@@ -93,33 +80,37 @@ export interface Device {
     firmware: Version;
     vendor: Vendor;
 }
-/**
- * A specific message configuration
- */
-export interface Then {
-    /**
-     * A message is active and can be shown to users satisfying rules
-     */
-    active: boolean;
-    notification: Notification;
-}
 export interface Notification {
-    /**
-     * A user can close the message and never see it again
-     */
+    id: string;
+    active: boolean;
+    priority: number;
     dismissible: boolean;
-    /**
-     * The location to which the message applies. Wildcards allowed.
-     */
-    location: string | string[];
-    message: Message;
-    severity: Severity;
-    [k: string]: unknown;
+    variant: Variant;
+    category: Category | Category[];
+    message: Localization;
+    cta?: CTA;
+    modal?: Modal;
+    domain?: Domain;
 }
 /**
- * A multilingual message localization
+ * A multilingual message localization.
  */
-export interface Message {
+export interface Localization {
     'en-GB': string;
     [k: string]: string;
+}
+/**
+ * Only used for 'banner' and 'context' categories.
+ */
+export interface CTA {
+    action: 'internal-link' | 'external-link';
+    href: string;
+    label: Localization;
+}
+/**
+ * Only used for 'modal' category.
+ */
+export interface Modal {
+    title?: Localization;
+    image?: string;
 }

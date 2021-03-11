@@ -1,289 +1,322 @@
 {
-   "$id":"https://data.trezor.io/message-system/schema.json",
-   "$schema":"http://json-schema.org/draft-07/schema#",
-   "title":"Message system",
-   "description":"JSON schema of the Trezor Suite messaging system",
-   "type":"object",
-   "required":[
+   "$id": "https://data.trezor.io/message-system/schema.json",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "title": "Message system",
+   "description": "JSON schema of the Trezor Suite messaging system.",
+   "type": "object",
+   "required": [
       "version",
       "timestamp",
       "sequence",
       "actions"
    ],
-   "properties":{
-      "version":{
-         "description":"Version of the messaging system. In case we would change the format of the config itself.",
-         "type":"integer",
-         "minimum":1,
-         "default":1
+   "properties": {
+      "version": {
+         "description": "A version of the messaging system. In case we would change the format of the config itself.",
+         "type": "integer",
+         "minimum": 1,
+         "default": 1
       },
-      "timestamp":{
-         "description":"Publish date of the config in ISO 8601 date-time format.",
+      "timestamp": {
+         "description": "Publish date of the config in ISO 8601 date-time format.",
          "type": "string",
-         "examples":[
-           "2021-03-03T03:48:16+00:00",
-           "2021-03-03T03:48:16Z"
+         "examples": [
+            "2021-03-03T03:48:16+00:00",
+            "2021-03-03T03:48:16Z"
          ]
       },
-      "sequence":{
-         "description":"An increasing counter. Suite MUST decline any file with lower than latest number. This is to protect against replay attacks, where attacker could send an older version of the file and Suite would accept it",
-         "type":"integer",
-         "minimum":1,
-         "default":1
+      "sequence": {
+         "description": "An increasing counter. Trezor Suite must decline any sequence lower than the latest number. This is to protect against replay attacks, where an attacker could send an older version of the file, and Trezor Suite would accept it.",
+         "type": "integer",
+         "minimum": 1,
+         "default": 1
       },
-      "actions":{
-         "description":"An array of messages which are displayed on specific conditions",
-         "type":"array",
-         "uniqueItems":true,
-         "items":{
+      "actions": {
+         "type": "array",
+         "uniqueItems": true,
+         "items": {
             "title": "Action",
-            "type":"object",
-            "required":[
-               "if",
-               "then"
+            "type": "object",
+            "required": [
+               "conditions",
+               "notification"
             ],
-            "properties":{
-               "if":{
-                  "title":"If",
-                  "description":"An array of required conditions to show the message.",
-                  "type":"array",
-                  "uniqueItems":true,
-                  "items":{
-                     "type":"object",
-                     "required":[
-                        "enabled",
+            "properties": {
+               "conditions": {
+                  "title": "Condition",
+                  "type": "array",
+                  "items": {
+                     "type": "object",
+                     "required": [
+                        "settings",
                         "os",
                         "environment",
                         "browser",
                         "transport",
-                        "device"
+                        "devices"
                      ],
-                     "properties":{
-                        "enabled":{
-                           "title": "EnabledServices",
-                           "description":"Services active",
-                           "type":"array",
-                           "uniqueItems": true,
-                           "items":{
-                              "type":"string",
-                              "enum": ["tor"]
-                           },
-                           "examples":[
-                              "tor"
-                           ]
+                     "properties": {
+                        "settings": {
+                           "type": "array",
+                           "items": {
+                              "title": "Settings",
+                              "description": "If a setting is not specified, then it can be either true or false. Currently, 'tor' and coin symbols are supported.",
+                              "type": "object",
+                              "properties": {
+                                 "tor": {
+                                    "type": "boolean"
+                                 }
+                              },
+                              "additionalProperties": {
+                                 "type": "boolean"
+                              }
+                           }
                         },
-                        "os":{
-                           "title":"Operating System",
-                           "description":"Eligible versions of operating systems",
-                           "type":"object",
-                           "required":[
+                        "os": {
+                           "title": "Operating System",
+                           "type": "object",
+                           "required": [
                               "macos",
                               "linux",
                               "windows",
                               "android",
                               "ios"
                            ],
-                           "properties":{
-                              "macos":{
-                                 "$ref":"#/definitions/version"
+                           "properties": {
+                              "macos": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "linux":{
-                                 "$ref":"#/definitions/version"
+                              "linux": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "windows":{
-                                 "$ref":"#/definitions/version"
+                              "windows": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "android":{
-                                 "$ref":"#/definitions/version"
+                              "android": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "ios":{
-                                 "$ref":"#/definitions/version"
+                              "ios": {
+                                 "$ref": "#/definitions/version"
                               }
                            },
                            "additionalProperties": {
-                              "$ref":"#/definitions/version"
+                              "$ref": "#/definitions/version"
                            }
                         },
-                        "environment":{
-                           "title":"Environment",
-                           "description":"Eligible versions of app releases",
-                           "type":"object",
-                           "required":[
+                        "environment": {
+                           "title": "Environment",
+                           "type": "object",
+                           "required": [
                               "desktop",
                               "mobile",
                               "web"
                            ],
-                           "properties":{
-                              "desktop":{
-                                 "$ref":"#/definitions/version"
+                           "properties": {
+                              "desktop": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "mobile":{
-                                 "$ref":"#/definitions/version"
+                              "mobile": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "web":{
-                                 "$ref":"#/definitions/version"
+                              "web": {
+                                 "$ref": "#/definitions/version"
                               }
                            },
-                           "additionalProperties":false
+                           "additionalProperties": false
                         },
-                        "browser":{
-                           "title":"Browser",
-                           "description":"Eligible versions of browsers",
-                           "type":"object",
-                           "required":[
+                        "browser": {
+                           "title": "Browser",
+                           "type": "object",
+                           "required": [
                               "firefox",
                               "chrome",
                               "chromium"
                            ],
-                           "properties":{
-                              "firefox":{
-                                 "$ref":"#/definitions/version"
+                           "properties": {
+                              "firefox": {
+                                 "$ref": "#/definitions/version"
                               },
-                              "chrome":{
-                                 "$ref":"#/definitions/version"
+                              "chrome": {
+                                 "$ref": "#/definitions/version"
                               },
                               "chromium": {
-                                 "$ref":"#/definitions/version"
+                                 "$ref": "#/definitions/version"
                               }
                            },
                            "additionalProperties": {
-                              "$ref":"#/definitions/version"
+                              "$ref": "#/definitions/version"
                            }
                         },
-                        "transport":{
-                           "title":"Transport",
-                           "description":"Eligible versions of transport layer apps",
-                           "type":"object",
-                           "required":[
+                        "transport": {
+                           "title": "Transport",
+                           "type": "object",
+                           "required": [
                               "bridge"
                            ],
-                           "properties":{
-                              "bridge":{
-                                 "$ref":"#/definitions/version"
+                           "properties": {
+                              "bridge": {
+                                 "$ref": "#/definitions/version"
                               }
                            },
-                           "additionalProperties":false
+                           "additionalProperties": false
                         },
-                        "device":{
-                           "description":"Eligible device models",
-                           "type":"array",
-                           "uniqueItems":true,
-                           "items":{
-                              "title":"Device",
-                              "type":"object",
-                              "required":[
+                        "devices": {
+                           "type": "array",
+                           "uniqueItems": true,
+                           "items": {
+                              "title": "Device",
+                              "type": "object",
+                              "required": [
                                  "model",
                                  "firmware",
                                  "vendor"
                               ],
-                              "properties":{
-                                 "model":{
-                                    "title":"Model",
-                                    "type":"string",
-                                    "enum":[
+                              "properties": {
+                                 "model": {
+                                    "title": "Model",
+                                    "type": "string",
+                                    "enum": [
                                        "t",
                                        "1"
                                     ]
                                  },
-                                 "firmware":{
-                                    "$ref":"#/definitions/version"
+                                 "firmware": {
+                                    "$ref": "#/definitions/version"
                                  },
-                                 "vendor":{
-                                    "title":"Vendor",
-                                    "description":"Eligible authorized vendors",
-                                    "type":"string",
-                                    "enum":[
+                                 "vendor": {
+                                    "title": "Vendor",
+                                    "description": "Eligible authorized vendors.",
+                                    "type": "string",
+                                    "enum": [
                                        "SatoshiLabs"
                                     ]
                                  }
                               },
-                              "additionalProperties":false
+                              "additionalProperties": false
                            }
                         }
                      },
-                     "additionalProperties":false
+                     "additionalProperties": false
                   }
                },
-               "then":{
-                  "title":"Then",
-                  "type":"object",
-                  "description":"A specific message configuration",
-                  "required":[
+               "notification": {
+                  "title": "Notification",
+                  "type": "object",
+                  "required": [
+                     "id",
                      "active",
-                     "notification"
+                     "priority",
+                     "dismissible",
+                     "variant",
+                     "category",
+                     "message"
                   ],
-                  "properties":{
-                     "active":{
-                        "description":"A message is active and can be shown to users satisfying rules",
-                        "type":"boolean"
+                  "properties": {
+                     "id": {
+                        "type": "string"
                      },
-                     "notification":{
-                        "title":"Notification",
-                        "type":"object",
-                        "required":[
-                           "dismissible",
-                           "location",
-                           "message",
-                           "severity"
-                        ],
-                        "properties":{
-                           "dismissible":{
-                              "description":"A user can close the message and never see it again",
-                              "type":"boolean"
+                     "active": {
+                        "type": "boolean"
+                     },
+                     "priority": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10
+                     },
+                     "dismissible": {
+                        "type": "boolean"
+                     },
+                     "variant": {
+                        "title": "Variant",
+                        "type": "string",
+                        "enum": [
+                           "info",
+                           "warning",
+                           "critical"
+                        ]
+                     },
+                     "category": {
+                        "oneOf": [
+                           {
+                              "$ref": "#/definitions/category"
                            },
-                           "location":{
-                              "description":"The location to which the message applies. Wildcards allowed.",
-                              "oneOf":[
-                                 {
-                                    "type":"string"
-                                 },
-                                 {
-                                    "type":"array",
-                                    "items":{
-                                       "type":"string"
-                                    }
-                                 }
+                           {
+                              "type": "array",
+                              "items": {
+                                 "$ref": "#/definitions/category"
+                              }
+                           }
+                        ]
+                     },
+                     "message": {
+                        "$ref": "#/definitions/localization"
+                     },
+                     "cta": {
+                        "title": "CTA",
+                        "description": "Only used for 'banner' and 'context' categories.",
+                        "required": [
+                           "action",
+                           "href",
+                           "label"
+                        ],
+                        "properties": {
+                           "action": {
+                              "type": "string",
+                              "enum": [
+                                 "internal-link",
+                                 "external-link"
                               ]
                            },
-                           "message":{
-                              "title":"Message",
-                              "description":"A multilingual message localization",
-                              "type":"object",
-                              "required":[
-                                 "en-GB"
-                              ],
-                              "properties":{
-                                 "en-GB":{
-                                    "type": "string"
-                                 }
-                              },
-                              "additionalProperties":{
+                           "href": {
+                              "type": "string"
+                           },
+                           "label": {
+                              "$ref": "#/definitions/localization"
+                           }
+                        },
+                        "additionalProperties": false
+                     },
+                     "modal": {
+                        "title": "Modal",
+                        "type": "object",
+                        "description": "Only used for 'modal' category.",
+                        "properties": {
+                           "title": {
+                              "$ref": "#/definitions/localization"
+                           },
+                           "image": {
+                              "type": "string"
+                           }
+                        },
+                        "additionalProperties": false
+                     },
+                     "domain": {
+                        "title": "Domain",
+                        "description": "The domain to which the message applies. Wildcards are allowed. Only used for 'context' category.",
+                        "oneOf": [
+                           {
+                              "type": "string"
+                           },
+                           {
+                              "type": "array",
+                              "items": {
                                  "type": "string"
                               }
-                           },
-                           "severity":{
-                              "title":"Severity",
-                              "type":"string",
-                              "enum":[
-                                 "low",
-                                 "medium",
-                                 "high"
-                              ]
                            }
-                        }
+                        ]
                      }
                   },
-                  "additionalProperties":false
+                  "additionalProperties": false
                }
             },
-            "additionalProperties":false
+            "additionalProperties": false
          }
       }
    },
-   "additionalProperties":false,
-   "definitions":{
-      "version":{
-         "examples":[
+   "additionalProperties": false,
+   "definitions": {
+      "version": {
+         "examples": [
             "<=20.01",
             ">30",
             "~20.1",
@@ -296,24 +329,45 @@
                ">71"
             ]
          ],
-         "oneOf":[
+         "oneOf": [
             {
-               "type":"string"
+               "type": "string"
             },
             {
-               "type":"array",
-               "uniqueItems":true,
-               "items":{
-                  "type":"string"
+               "type": "array",
+               "uniqueItems": true,
+               "items": {
+                  "type": "string"
                }
             },
             {
-               "type":"null"
+               "type": "null"
             }
          ]
       },
-      "messageLocal":{
-         "type":"string"
+      "localization": {
+         "title": "Localization",
+         "description": "A multilingual message localization.",
+         "type": "object",
+         "required": [
+            "en-GB"
+         ],
+         "properties": {
+            "en-GB": {
+               "type": "string"
+            }
+         },
+         "additionalProperties": {
+            "type": "string"
+         }
+      },
+      "category": {
+         "type": "string",
+         "enum": [
+            "banner",
+            "context",
+            "modal"
+         ]
       }
    }
 }

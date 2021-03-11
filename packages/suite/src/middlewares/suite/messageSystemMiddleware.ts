@@ -15,7 +15,8 @@ const messageSystemMiddleware = (api: MiddlewareAPI<Dispatch, AppState>) => (nex
         action.type === SUITE.TOR_STATUS ||
         action.type === DEVICE.CHANGED ||
         action.type === TRANSPORT.START ||
-        action.type === MESSAGE_SYSTEM.FETCH_SUCCESS_UPDATE
+        action.type === MESSAGE_SYSTEM.FETCH_SUCCESS_UPDATE ||
+        action.type === WALLET_SETTINGS.CHANGE_NETWORKS
     ) {
         const { config } = api.getState().messageSystem;
         const { device, transport, tor } = api.getState().suite;

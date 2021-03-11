@@ -2,19 +2,19 @@ import Bowser from 'bowser';
 import { verify, decode, Algorithm, Signature } from 'jws';
 import * as semver from 'semver';
 import { TransportInfo } from 'trezor-connect';
+import { Network } from '@wallet-types';
+import { TrezorDevice } from '@suite-types';
+import { getUserAgent, isWeb, isDesktop } from '@suite-utils/env';
 import {
     MessageSystem,
-    Then,
+    Notification,
     Version,
     OperatingSystem,
-    EnabledServices,
+    Settings,
     Transport,
     Browser,
     Device,
 } from '@suite-types/messageSystem';
-import { Network } from '@wallet-types';
-import { TrezorDevice } from '@suite-types';
-import { getUserAgent, isWeb, isDesktop } from '@suite-utils/env';
 
 // TODO: use production ready key; move to suite-data?
 export const secp256k1PublicKey = `-----BEGIN PUBLIC KEY-----
@@ -41,19 +41,26 @@ const normalizeVersion = (version: Version): string => {
     return version.join(' || ');
 };
 
-type CurrentlyEnabledServices = {
+type CurrentSettings = {
     tor: boolean;
     enabledNetworks: Network['symbol'][];
 };
 
-const validateEnabledServicesCompatibility = (
-    enabledServicesCondition: EnabledServices,
-    currentlyEnabledServices: CurrentlyEnabledServices,
+const validateSettingsCompatibility = (
+    settingsCondition: Settings[],
+    currentSettings: CurrentSettings,
 ): boolean => {
-    const services: string[] = [...currentlyEnabledServices.enabledNetworks];
-    currentlyEnabledServices.tor && services.push('tor');
+    const settings: {
+        [key: string]: any;
+    } = currentSettings.enabledNetworks.reduce((o, key) => Object.assign(o, { [key]: true }), {
+        tor: currentSettings.tor,
+    });
 
-    return enabledServicesCondition.every(enabledService => services.includes(enabledService));
+    return settingsCondition.some(settingCondition =>
+        Object.entries(settingCondition).every(([key, value]: [string, boolean]) => {
+            return settings[key] === value;
+        }),
+    );
 };
 
 const validateOSCompatibility = (
@@ -122,6 +129,7 @@ const validateDeviceCompatibility = (
 
         validDevice &&= device.model === model;
         validDevice &&= semver.satisfies(deviceVersion, normalizeVersion(device.firmware));
+        // TODO: vendor
 
         return validDevice;
     });
@@ -129,22 +137,22 @@ const validateDeviceCompatibility = (
 
 export type Options = {
     tor: boolean;
+    enabledNetworks: Network['symbol'][];
     transport: Partial<TransportInfo> | undefined;
     device: TrezorDevice | undefined;
-    enabledNetworks: Network['symbol'][];
 };
 
 export const getValidMessages = (
     messageSystemConfig: MessageSystem | null,
     options: Options,
-): Then[] => {
+): Notification[] => {
     if (!messageSystemConfig) {
         return [];
     }
 
     const { device, transport, tor, enabledNetworks } = options;
 
-    const currentlyEnabledServices = {
+    const currentSettings: CurrentSettings = {
         tor,
         enabledNetworks,
     };
@@ -166,7 +174,7 @@ export const getValidMessages = (
 
     return messageSystemConfig.actions
         .filter(action => {
-            return action.if.some(condition => {
+            return action.conditions.some(condition => {
                 let conditionValid = true;
                 // TODO: if conditionValid === false, then it can return immediately
                 const {
@@ -174,8 +182,8 @@ export const getValidMessages = (
                     os: osCondition,
                     browser: browserCondition,
                     transport: transportCondition,
-                    enabled: enabledServicesCondition,
-                    device: deviceCondition,
+                    settings: settingsCondition,
+                    devices: deviceCondition,
                 } = condition;
 
                 conditionValid &&= validateOSCompatibility(
@@ -202,10 +210,7 @@ export const getValidMessages = (
                     );
                 }
 
-                conditionValid &&= validateEnabledServicesCompatibility(
-                    enabledServicesCondition,
-                    currentlyEnabledServices,
-                );
+                validateSettingsCompatibility(settingsCondition, currentSettings);
 
                 conditionValid &&= validateTransportCompatibility(transportCondition, transport);
 
@@ -214,5 +219,5 @@ export const getValidMessages = (
                 return conditionValid;
             });
         })
-        .map(action => action.then);
+        .map(action => action.notification);
 };
