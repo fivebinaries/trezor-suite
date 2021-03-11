@@ -45,7 +45,7 @@ module.exports = {
         writeToDisk: true,
         port: 3000,
         historyApiFallback: true,
-        hot: true, // HMR
+        hot: isDev, // HMR
     },
     entry: {
         app: path.join(__dirname, 'src', 'index.tsx'),
@@ -84,6 +84,7 @@ module.exports = {
                 vendors: {
                     chunks: 'initial',
                     name: 'vendors',
+                    // maxSize: 500 * 1000,
                     test: /[\\/]node_modules[\\/]/,
                 },
                 components: {
@@ -93,6 +94,10 @@ module.exports = {
                 },
             },
         },
+    },
+    performance: {
+        maxAssetSize: 10 * 1000 * 1000,
+        maxEntrypointSize: 1000 * 1000,
     },
     module: {
         rules: [
@@ -141,9 +146,9 @@ module.exports = {
             {
                 test: [/\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
                 use: {
-                    loader: 'url-loader',
+                    loader: 'file-loader',
                     options: {
-                        limit: 10000,
+                        // limit: 10000,
                         name: 'static/img/[name].[contenthash:8].[ext]',
                     },
                 },
