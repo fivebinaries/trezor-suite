@@ -14,7 +14,7 @@ const NoBackup = () => {
         goto: routerActions.goto,
     });
     return (
-        <Wrapper variant="warning">
+        <Wrapper variant="critical">
             <Message>
                 <Translation id="TR_YOUR_TREZOR_IS_NOT_BACKED_UP" />{' '}
                 <Translation id="TR_IF_YOUR_DEVICE_IS_EVER_LOST" />

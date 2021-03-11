@@ -11,7 +11,7 @@ const FailedBackup = () => {
     });
 
     return (
-        <Wrapper variant="warning">
+        <Wrapper variant="critical">
             <Translation id="TR_FAILED_BACKUP" />
             <Button
                 variant="tertiary"

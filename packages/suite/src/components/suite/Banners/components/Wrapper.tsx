@@ -7,6 +7,8 @@ const getBgColor = (variant: Props['variant'], theme: SuiteThemeColors) => {
         case 'info':
             return theme.BG_BLUE;
         case 'warning':
+            return theme.TYPE_ORANGE;
+        case 'critical':
             return theme.BG_RED;
         default:
             return 'transparent';
@@ -50,7 +52,7 @@ const Body = styled.div`
 
 interface Props {
     children: React.ReactNode;
-    variant: 'info' | 'warning';
+    variant: 'info' | 'warning' | 'critical';
 }
 
 const NotificationsWrapper = ({ variant, children }: Props) => {

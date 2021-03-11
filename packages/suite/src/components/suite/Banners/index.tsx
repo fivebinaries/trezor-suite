@@ -20,7 +20,7 @@ const Banners = () => {
     const online = useSelector(state => state.suite.online);
     const device = useSelector(state => state.suite.device);
 
-    let Banner;
+    let banner;
 
     const showUpdateBridge = () => {
         if (
@@ -34,24 +34,24 @@ const Banners = () => {
     };
 
     if (device?.features?.unfinished_backup) {
-        Banner = <FailedBackup />;
+        banner = <FailedBackup />;
     } else if (device?.features?.needs_backup) {
-        Banner = <NoBackup />;
+        banner = <NoBackup />;
     } else if (showUpdateBridge()) {
-        Banner = <UpdateBridge />;
+        banner = <UpdateBridge />;
     } else if (
         device?.connected &&
         device?.features &&
         device?.mode !== 'bootloader' &&
         ['outdated'].includes(device.firmware)
     ) {
-        Banner = <UpdateFirmware />;
+        banner = <UpdateFirmware />;
     }
 
     return (
         <Wrapper>
             <OnlineStatus isOnline={online} />
-            {Banner}
+            {banner}
             {/* TODO: add Pin not set */}
         </Wrapper>
     );

@@ -10,7 +10,7 @@ interface Props {
 const OnlineStatus = ({ isOnline }: Props) => {
     if (isOnline) return null;
     return (
-        <Wrapper variant="warning">
+        <Wrapper variant="critical">
             <Translation id="TR_YOU_WERE_DISCONNECTED_DOT" />
         </Wrapper>
     );
