@@ -868,6 +868,10 @@ const definedMessages = defineMessages({
         description: 'Shows advanced coin settings',
         id: 'TR_ADVANCED_SETTINGS',
     },
+    TR_ONBOARDING_ALLOW_ANALYTICS: {
+        defaultMessage: 'Allow anonymous data storing',
+        id: 'TR_ONBOARDING_ALLOW_ANALYTICS',
+    },
     TR_ALLOW_ANALYTICS: {
         defaultMessage: 'Allow anonymous data storing',
         id: 'TR_ALLOW_ANALYTICS',

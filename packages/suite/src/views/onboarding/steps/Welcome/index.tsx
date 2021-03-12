@@ -1,50 +1,78 @@
-import React from 'react';
-
-import { Translation } from '@suite-components';
-import { Text, Option, Wrapper } from '@onboarding-components';
-import { useActions } from '@suite-hooks';
-import * as onboardingActions from '@onboarding-actions/onboardingActions';
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useSpring, Transition, useTransition, config, animated } from 'react-spring';
+import { useSelector } from '@suite-hooks';
+import { isWebUSB } from '@suite-utils/transport';
+import { getConnectedDeviceStatus } from '@suite-utils/device';
+import WelcomeLayout from '@onboarding-components/WelcomeLayout';
+import ConnectDevicePrompt from '@onboarding-components/ConnectDevicePrompt';
+import NoTransport from './NoTransport';
+import NoDeviceDetected from './NoDeviceDetected';
+import UnexpectedDeviceState from './UnexpectedDeviceState';
+import PreOnboardingSetup from './PreOnboardingSetup';
 
 const WelcomeStep = () => {
-    const { goToNextStep } = useActions({
-        goToNextStep: onboardingActions.goToNextStep,
-    });
+    const { device, transport } = useSelector(state => ({
+        device: state.suite.device,
+        transport: state.suite.transport,
+    }));
+    const deviceStatus = getConnectedDeviceStatus(device);
+    const isDetectingDevice =
+        (device && device.features && device.connected) || deviceStatus === 'unreadable';
+
+    const deviceInUnexpectedState = isDetectingDevice
+        ? deviceStatus !== 'ok' && deviceStatus !== 'initialized'
+        : false;
+
+    let content: JSX.Element | null = null;
+    // const componentId = '';
+    if (!transport?.type) {
+        // Whole onboarding is loaded only after TRANSPORT.START action, which sets suite.transport
+        // No transport layer available to communicate with the device => we should offer bridge. (Eg. firefox user without bridge installed)
+        // It shouldn't happen in Chrome and desktop app as bridge is built-in and there should be WebUSB as a fallback
+        content = <NoTransport />;
+        // componentId = 'transport';
+    } else if (!isDetectingDevice) {
+        // Transport layer is available, but still no device detected (show WebUSB "check for devices" button if possible and provide helpful tips)
+        content = <NoDeviceDetected offerWebUsb={isWebUSB(transport)} />;
+        // componentId = 'nodevice';
+    } else if (deviceInUnexpectedState) {
+        // Device detected, but it is in unexpected state (unreadable, seedless, in bootloader)
+        content = <UnexpectedDeviceState deviceStatus={deviceStatus!} />;
+        // componentId = 'unexpected-state';
+    } else {
+        // happy path, user connected uninitialized or initialized device
+        // Show analytics, device security/integrity check
+        content = <PreOnboardingSetup initialized={deviceStatus === 'initialized'} />;
+        // componentId = 'analytics';
+    }
+
+    // const [items, _] = useState(['transport', 'nodevice', 'unexpected-state', 'analytics']);
+
+    // const transitions = useTransition(items, null, {
+    //     from: { opacity: 0 },
+    //     enter: { opacity: 1 },
+    //     leave: { opacity: 0 },
+    // });
 
     return (
-        <Wrapper.Step data-test="@onboarding/welcome-step">
-            <Wrapper.StepBody>
-                <Wrapper.StepHeading>
-                    <Translation id="TR_WELCOME_TO_TREZOR" />
-                </Wrapper.StepHeading>
-
-                <Text>
-                    <Translation id="TR_WELCOME_TO_TREZOR_TEXT" />
-                </Text>
-
-                <Wrapper.Options>
-                    <Option
-                        data-test="@onboarding/begin-button"
-                        action={() => {
-                            goToNextStep('create-or-recover');
-                        }}
-                        title={<Translation id="TR_IM_NEW_TO_ALL_THIS" />}
-                        text={<Translation id="TR_I_WANT_TO_BE_GUIDED_THROUGH" />}
-                        button={<Translation id="TR_BEGIN_ONBOARDING" />}
-                        imgSrc="images/svg/new-user.svg"
-                    />
-                    <Option
-                        data-test="@onboarding/skip-button"
-                        action={() => {
-                            goToNextStep('skip');
-                        }}
-                        title={<Translation id="TR_I_HAVE_INITIALIZED_DEVICE" />}
-                        text={<Translation id="TR_MY_DEVICE_IS_INITIALIZED" />}
-                        button={<Translation id="TR_SKIP_ONBOARDING" />}
-                        imgSrc="images/svg/existing-user.svg"
-                    />
-                </Wrapper.Options>
-            </Wrapper.StepBody>
-        </Wrapper.Step>
+        <WelcomeLayout>
+            <ConnectDevicePrompt
+                connected={isDetectingDevice}
+                showWarning={deviceInUnexpectedState}
+            />
+            {/* {transitions.map(
+                ({ item, key, props }) =>
+                    item === componentId && (
+                        <animated.div key={item} style={props}>
+                            {content}
+                            {console.log('item', item)}
+                            {console.log('key', key)}
+                        </animated.div>
+                    ),
+            )} */}
+            {content}
+        </WelcomeLayout>
     );
 };
 
