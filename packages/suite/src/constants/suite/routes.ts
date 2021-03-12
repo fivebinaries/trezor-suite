@@ -12,22 +12,16 @@ const modalAppParams = ['cancelable'] as const;
 
 const routes = [
     {
-        name: 'suite-welcome',
-        pattern: '/welcome',
-        app: 'welcome',
-        isModal: true,
-    },
-    {
         name: 'suite-start',
         pattern: '/start',
         app: 'start',
     },
-    {
-        name: 'suite-analytics',
-        pattern: '/analytics',
-        app: 'analytics',
-        isModal: true,
-    },
+    // {
+    //     name: 'suite-analytics',
+    //     pattern: '/analytics',
+    //     app: 'analytics',
+    //     isModal: true,
+    // },
     {
         name: 'suite-index',
         pattern: '/',
@@ -72,7 +66,7 @@ const routes = [
         name: 'onboarding-index',
         pattern: '/onboarding',
         app: 'onboarding',
-        isModal: true,
+        isModal: false,
         params: modalAppParams,
     },
     {

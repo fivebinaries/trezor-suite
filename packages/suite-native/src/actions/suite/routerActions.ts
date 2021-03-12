@@ -256,7 +256,7 @@ export const initialRedirection = () => async (dispatch: Dispatch, getState: Get
     const { initialRun } = getState().suite.flags;
     const unlocked = dispatch(isRouterUnlocked());
     if (initialRun && unlocked) {
-        await dispatch(onLocationChange(getRoute('suite-welcome')));
+        await dispatch(onLocationChange(getRoute('onboarding-index')));
     }
 };
 
