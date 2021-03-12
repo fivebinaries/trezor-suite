@@ -37,6 +37,10 @@ pathKeys.forEach(key => {
     alias[key] = path.resolve(getPath(key));
 });
 
+// Routes
+const routesConfig = require('./src/config/routes.json');
+const routePaths = routesConfig.map(r => r.path);
+
 module.exports = {
     mode: environment,
     target: isDev ? 'web' : 'browserslist',
@@ -84,7 +88,7 @@ module.exports = {
                 vendors: {
                     chunks: 'initial',
                     name: 'vendors',
-                    // maxSize: 500 * 1000,
+                    // maxSize: 350 * 1000,
                     test: /[\\/]node_modules[\\/]/,
                 },
                 components: {
@@ -108,7 +112,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        // cacheDirectory: true,
+                        cacheDirectory: true,
                         presets: ['@babel/preset-react', '@babel/preset-typescript'],
                         plugins: [
                             '@babel/plugin-proposal-class-properties',
@@ -183,9 +187,21 @@ module.exports = {
                 concurrency: 100,
             },
         }),
+        // Html files
+        ...routePaths.map(r => {
+            return new HtmlWebpackPlugin({
+                minify: isDev,
+                template: path.join(__dirname, 'src', 'static', 'index.html'),
+                templateParameters: {
+                    assetPrefix: process.env.assetPrefix ?? '/',
+                    isOnionLocation: false, // TODO: Get from flags
+                },
+                filename: path.join(__dirname, 'dist', r, 'index.html'),
+            });
+        }),
         new HtmlWebpackPlugin({
             minify: isDev,
-            template: path.join(__dirname, 'src', 'static', 'index.html'),
+            template: path.join(__dirname, 'src', 'static', '404.html'),
             templateParameters: {
                 assetPrefix: process.env.assetPrefix ?? '/',
                 isOnionLocation: false, // TODO: Get from flags

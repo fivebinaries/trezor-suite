@@ -1,81 +1,61 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, memo, Suspense } from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { Loader } from '@trezor/components';
 
-const Dashboard = lazy(() => import('@dashboard-views'));
-const Notifications = lazy(() => import('@suite-views/notifications'));
-const Passwords = lazy(() => import('@passwords-views'));
-const Portfolio = lazy(() => import('@portfolio-views'));
+import routes from '../config/routes.json';
+
 const ErrorPage = lazy(() => import('@suite-views/error'));
+const components: { [key: string]: React.LazyExoticComponent<any> } = {
+    '@dashboard-views': lazy(() => import('@dashboard-views')),
+    '@suite-views/notifications': lazy(() => import('@suite-views/notifications')),
+    '@passwords-views': lazy(() => import('@passwords-views')),
+    '@portfolio-views': lazy(() => import('@portfolio-views')),
+    '@suite-views/error': lazy(() => import('@suite-views/error')),
 
-const Transactions = lazy(() => import('@wallet-views/transactions'));
-const Receive = lazy(() => import('@wallet-views/receive'));
-const Details = lazy(() => import('@wallet-views/details'));
-const Send = lazy(() => import('@wallet-views/send'));
-const SignVerify = lazy(() => import('@wallet-views/sign-verify'));
+    '@wallet-views/transactions': lazy(() => import('@wallet-views/transactions')),
+    '@wallet-views/receive': lazy(() => import('@wallet-views/receive')),
+    '@wallet-views/details': lazy(() => import('@wallet-views/details')),
+    '@wallet-views/send': lazy(() => import('@wallet-views/send')),
+    '@wallet-views/sign-verify': lazy(() => import('@wallet-views/sign-verify')),
 
-const CoinMarketBuy = lazy(() => import('@wallet-views/coinmarket/buy'));
-const CoinMarketBuyDetail = lazy(() => import('@wallet-views/coinmarket/buy/detail'));
-const CoinMarketBuyOffers = lazy(() => import('@wallet-views/coinmarket/buy/offers'));
-const CoinMarketExchange = lazy(() => import('@wallet-views/coinmarket/exchange'));
-const CoinMarketExchangeDetail = lazy(() => import('@wallet-views/coinmarket/exchange/detail'));
-const CoinMarketExchangeOffers = lazy(() => import('@wallet-views/coinmarket/exchange/offers'));
-const CoinMarketSpend = lazy(() => import('@wallet-views/coinmarket/spend'));
-const CoinmarketRedirect = lazy(() => import('@wallet-views/coinmarket/redirect'));
+    '@wallet-views/coinmarket/buy': lazy(() => import('@wallet-views/coinmarket/buy')),
+    '@wallet-views/coinmarket/buy/detail': lazy(
+        () => import('@wallet-views/coinmarket/buy/detail'),
+    ),
+    '@wallet-views/coinmarket/buy/offers': lazy(
+        () => import('@wallet-views/coinmarket/buy/offers'),
+    ),
+    '@wallet-views/coinmarket/exchange': lazy(() => import('@wallet-views/coinmarket/exchange')),
+    '@wallet-views/coinmarket/exchange/detail': lazy(
+        () => import('@wallet-views/coinmarket/exchange/detail'),
+    ),
+    '@wallet-views/coinmarket/exchange/offers': lazy(
+        () => import('@wallet-views/coinmarket/exchange/offers'),
+    ),
+    '@wallet-views/coinmarket/spend': lazy(() => import('@wallet-views/coinmarket/spend')),
+    '@wallet-views/coinmarket/redirect': lazy(() => import('@wallet-views/coinmarket/redirect')),
 
-const Settings = lazy(() => import('@settings-views'));
-const SettingsCoins = lazy(() => import('@settings-views/coins'));
-const SettingsDebug = lazy(() => import('@settings-views/debug'));
-const SettingsDevice = lazy(() => import('@settings-views/device'));
+    '@settings-views': lazy(() => import('@settings-views')),
+    '@settings-views/coins': lazy(() => import('@settings-views/coins')),
+    '@settings-views/debug': lazy(() => import('@settings-views/debug')),
+    '@settings-views/device': lazy(() => import('@settings-views/device')),
+};
 
 const AppRouter = () => (
-    <Suspense fallback={<p>Loading</p>}>
+    <Suspense fallback={<Loader />}>
         <Switch>
-            <Route exact path="/" component={Dashboard} />
-            {/* Accounts */}
-            <Route exact path="/accounts" component={Transactions} />
-            <Route path="/accounts/details" component={Details} />
-            <Route path="/accounts/receive" component={Receive} />
-            <Route path="/accounts/send" component={Send} />
-            <Route path="/accounts/sign-verify" component={SignVerify} />
-            {/* Coinmarket */}
-            <Route exact path="/accounts/coinmarket" component={CoinMarketBuy} />
-            <Route exact path="/accounts/coinmarket/buy" component={CoinMarketBuy} />
-            <Route path="/accounts/coinmarket/buy/detail" component={CoinMarketBuyDetail} />
-            <Route path="/accounts/coinmarket/buy/offers" component={CoinMarketBuyOffers} />
-            <Route exact path="/accounts/coinmarket/exchange" component={CoinMarketExchange} />
-            <Route
-                path="/accounts/coinmarket/exchange/detail"
-                component={CoinMarketExchangeDetail}
-            />
-            <Route
-                path="/accounts/coinmarket/exchange/offers"
-                component={CoinMarketExchangeOffers}
-            />
-            <Route path="/accounts/coinmarket/spend" component={CoinMarketSpend} />
-            {/* Coinmarket Redirect */}
-            <Route path="/coinmarket-redirect" component={CoinmarketRedirect} />
-            {/* Notifications */}
-            <Route path="/notifications" component={Notifications} />
-            {/* Passwords */}
-            <Route path="/passwords" component={Passwords} />
-            {/* Portfolio */}
-            <Route path="/portfolio" component={Portfolio} />
-            {/* Settings */}
-            <Route exact path="/settings" component={Settings} />
-            <Route path="/settings/coins" component={SettingsCoins} />
-            <Route path="/settings/debug" component={SettingsDebug} />
-            <Route path="/settings/device" component={SettingsDevice} />
-            {/* Modals */}
-            <Route path="/backup" />
-            <Route path="/bridge" />
-            <Route path="/firmware" />
-            <Route path="/onboarding" />
-            <Route path="/recovery" />
-            <Route path="/version" />
+            {routes.map(route => (
+                <Route
+                    key={route.path}
+                    path={route.path}
+                    exact={route.exact}
+                    component={route.component ? components[route.component] : undefined}
+                />
+            ))}
             {/* 404 */}
             <Route path="*" component={ErrorPage} />
         </Switch>
     </Suspense>
 );
 
-export default AppRouter;
+export default memo(AppRouter);

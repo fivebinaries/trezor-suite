@@ -22,7 +22,6 @@ import ThemeProvider from '@suite-support/ThemeProvider';
 import history from '@suite/support/history';
 
 import AppRouter from './support/Router';
-import ImagesPreloader from './support/ImagesPreloader';
 import { CypressExportStore } from './support/CypressExportStore';
 import GlobalStyles from '@suite-support/styles/global';
 
@@ -42,7 +41,6 @@ const Main = () => {
 
     return (
         <>
-            <ImagesPreloader />
             <CypressExportStore store={store} />
             <ReduxProvider store={store}>
                 <ThemeProvider>
