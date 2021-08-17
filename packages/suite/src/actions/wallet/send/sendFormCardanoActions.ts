@@ -20,7 +20,7 @@ import {
     PrecomposedTransactionCardano,
 } from '@wallet-types/sendForm';
 import { Dispatch, GetState } from '@suite-types';
-import { coinSelection, trezorUtils } from '@fivebinaries/coin-selection';
+import { coinSelection, trezorUtils } from '@slowbackspace/coin-selection';
 
 export const composeTransaction = (
     formValues: FormState,
