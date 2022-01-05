@@ -416,6 +416,46 @@ const networks = [
             account: 'https://test.bithomp.com/explorer/',
         },
     },
+    {
+        name: 'Cardano',
+        networkType: 'cardano',
+        symbol: 'ada',
+        bip43Path: "m/1852'/1815'/i'",
+        decimals: 6,
+        testnet: false,
+        explorer: {
+            tx: 'https://cardanoscan.io/transaction/',
+            account: 'https://test.bithomp.com/explorer/',
+            token: 'https://cardanoscan.io/token/',
+        },
+    },
+    {
+        name: 'Cardano Testnet',
+        networkType: 'cardano',
+        symbol: 'tada',
+        bip43Path: "m/1852'/1815'/i'",
+        decimals: 6,
+        testnet: true,
+        explorer: {
+            tx: 'https://cardanoscan.io/transaction/',
+            account: 'https://test.bithomp.com/explorer/',
+            token: 'https://cardanoscan.io/token/',
+        },
+    },
+    {
+        name: 'Cardano (Byron)',
+        networkType: 'cardano',
+        accountType: 'legacy',
+        symbol: 'ada',
+        bip43Path: "m/44'/1815'/i'",
+        decimals: 6,
+        testnet: false,
+        explorer: {
+            tx: 'https://cardanoscan.io/transaction/',
+            account: 'https://test.bithomp.com/explorer/',
+            token: 'https://cardanoscan.io/token/',
+        },
+    },
 ] as const;
 
 type Network = {

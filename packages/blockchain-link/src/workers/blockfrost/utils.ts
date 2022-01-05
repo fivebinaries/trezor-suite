@@ -246,7 +246,7 @@ export const transformTransaction = (
         amount,
         fee,
         totalSpent,
-        targets: targets.map(t => transformTarget(t, incoming)),
+        targets: targets.filter(t => typeof t === 'object').map(t => transformTarget(t, incoming)),
         tokens,
         cardanoSpecific: {
             subtype: getSubtype(blockfrostTxData),
