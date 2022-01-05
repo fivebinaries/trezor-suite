@@ -1,5 +1,6 @@
 import TrezorConnect, { AccountTransaction } from 'trezor-connect';
 import { saveAs } from 'file-saver';
+import { isCardanoTx } from '@wallet-utils/cardanoUtils';
 import { getAccountTransactions, formatNetworkAmount } from '@wallet-utils/accountUtils';
 import { enhanceTransaction, findTransactions } from '@wallet-utils/transactionUtils';
 import * as accountActions from '@wallet-actions/accountActions';
@@ -7,7 +8,7 @@ import { TRANSACTION } from '@wallet-actions/constants';
 import { SETTINGS } from '@suite-config';
 import { Account, WalletAccountTransaction } from '@wallet-types';
 import { Dispatch, GetState } from '@suite-types';
-import { PrecomposedTransactionFinal } from '@wallet-types/sendForm';
+import { PrecomposedTransactionFinal, TxFinalCardano } from '@wallet-types/sendForm';
 import { formatData } from '@wallet-utils/exportTransactions';
 
 export type TransactionAction =
@@ -74,8 +75,9 @@ export const remove = (account: Account, txs: WalletAccountTransaction[]): Trans
  * @param {string} newTxid
  */
 export const replaceTransaction =
-    (account: Account, tx: PrecomposedTransactionFinal, newTxid: string) =>
+    (account: Account, tx: PrecomposedTransactionFinal | TxFinalCardano, newTxid: string) =>
     (dispatch: Dispatch, getState: GetState) => {
+        if (isCardanoTx(account, tx)) return;
         if (!tx.prevTxid) return; // ignore if it's not replacement tx
 
         // find all transactions to replace, they may be related to another account

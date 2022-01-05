@@ -19,7 +19,8 @@ export const allowedDomains = [
     'o117836.ingest.sentry.io',
     'oauth2.googleapis.com',
     'googleapis.com',
-    onionDomain,
+    'trezor-cardano-mainnet.blockfrost.io',
+    'trezor-cardano-testnet.blockfrost.io',
 ];
 
 export const cspRules = [

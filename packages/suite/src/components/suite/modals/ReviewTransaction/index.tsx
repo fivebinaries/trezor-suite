@@ -8,6 +8,8 @@ import * as sendFormActions from '@wallet-actions/sendFormActions';
 import { OutputProps } from './components/Output';
 import OutputList from './components/OutputList';
 import Summary from './components/Summary';
+import { isCardanoTx } from '@wallet-utils/cardanoUtils';
+import { CardanoOutput } from 'trezor-connect';
 
 const ModalInner = styled.div`
     display: flex;
@@ -17,6 +19,23 @@ const ModalInner = styled.div`
         flex-direction: column;
     }
 `;
+
+const getCardanoTokenBundle = (output: CardanoOutput) => {
+    if (output.tokenBundle && output.tokenBundle.length === 0) return undefined;
+
+    if ('address' in output && output.tokenBundle) {
+        return {
+            type: 'cardano',
+            address: output.address,
+            balance: output.tokenBundle[0].tokenAmounts[0].amount,
+            symbol: Buffer.from(
+                output.tokenBundle[0].tokenAmounts[0].assetNameBytes,
+                'hex',
+            ).toString('utf8'),
+            decimals: 0,
+        };
+    }
+};
 
 // This modal is opened either in Device (button request) or User (push tx) context
 // contexts are distinguished by `type` prop
@@ -40,14 +59,17 @@ const ReviewTransaction = ({ decision }: Props) => {
     if (selectedAccount.status !== 'loaded' || !device || !precomposedTx || !precomposedForm)
         return null;
 
-    const { networkType } = selectedAccount.account;
-    const isRbfAction = !!precomposedTx.prevTxid;
-    const decreaseOutputId = precomposedTx.useNativeRbf
-        ? precomposedForm.setMaxOutputId
-        : undefined;
+    const { account } = selectedAccount;
+    const { networkType } = account;
+    const isRbfAction = !isCardanoTx(account, precomposedTx) && !!precomposedTx.prevTxid;
+    const decreaseOutputId =
+        !isCardanoTx(account, precomposedTx) && precomposedTx.useNativeRbf
+            ? precomposedForm.setMaxOutputId
+            : undefined;
 
     const outputs: OutputProps[] = [];
-    if (precomposedTx.useNativeRbf) {
+
+    if (!isCardanoTx(account, precomposedTx) && precomposedTx.useNativeRbf) {
         outputs.push(
             {
                 type: 'txid',
@@ -69,6 +91,20 @@ const ReviewTransaction = ({ decision }: Props) => {
                 value2: precomposedTx.transaction.outputs[decreaseOutputId].amount!,
             });
         }
+    } else if (isCardanoTx(account, precomposedTx)) {
+        precomposedTx.transaction.outputs.forEach(o => {
+            if ('address' in o) {
+                outputs.push({
+                    type: 'regular',
+                    label: o.address,
+                    value:
+                        o.tokenBundle && o.tokenBundle?.length > 0
+                            ? o.tokenBundle[0].tokenAmounts[0].amount || '0'
+                            : o.amount,
+                    token: getCardanoTokenBundle(o),
+                });
+            }
+        });
     } else {
         precomposedTx.transaction.outputs.forEach(o => {
             if (typeof o.address === 'string') {
@@ -107,7 +143,10 @@ const ReviewTransaction = ({ decision }: Props) => {
                 value: precomposedForm.rippleDestinationTag,
             });
         }
-    } else if (!precomposedTx.useNativeRbf) {
+    } else if (
+        (!isCardanoTx(account, precomposedTx) && !precomposedTx.useNativeRbf) ||
+        isCardanoTx(account, precomposedTx)
+    ) {
         outputs.push({ type: 'fee', value: precomposedTx.fee });
     }
 
