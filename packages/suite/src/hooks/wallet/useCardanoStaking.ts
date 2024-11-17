@@ -8,6 +8,7 @@ import {
     getNetworkId,
     getUnusedChangeAddress,
     getDelegationCertificates,
+    getVotingCertificates,
     isPoolOverSaturated,
     getStakePoolForDelegation,
     getAddressParameters,
@@ -125,6 +126,29 @@ export const useCardanoStaking = (): CardanoStaking => {
                       ]
                     : [];
 
+            // TODO: If no dRep has been selected for the account, display a modal prompting the user
+            // to make a selection before proceeding with the withdrawal.
+            if (action === 'withdrawal') {
+                // Add correct dRep type based on user choice
+                // User has either choice to delegate votes to Trezor dRep or abstain
+
+                // Trezor Drep chosen
+                certificates.push(
+                    ...getVotingCertificates(stakingPath, {
+                        type: PROTO.CardanoDRepType.KEY_HASH,
+                        // TODO: use trezor dRep hex fetched from /api/v0/drep (same logic as for CARDANO_STAKE_POOL_MAINNET_URL)
+                        keyHash: 'dRep_hex',
+                    }),
+                );
+
+                // User does not wish to participate in governance
+                // certificates.push(
+                //     ...getVotingCertificates(stakingPath, {
+                //         type: PROTO.CardanoDRepType.ABSTAIN,
+                //     }),
+                // );
+            }
+
             const response = await trezorConnect.cardanoComposeTransaction({
                 account: {
                     addresses: account.addresses,
@@ -207,6 +231,7 @@ export const useCardanoStaking = (): CardanoStaking => {
                 protocolMagic: getProtocolMagic(account.symbol),
                 networkId: getNetworkId(account.symbol),
                 derivationType: getDerivationType(account.accountType),
+                tagCborSets: true,
                 ttl: txPlan.ttl?.toString(),
                 ...(certificates.length > 0 ? { certificates } : {}),
                 ...(withdrawals.length > 0 ? { withdrawals } : {}),
